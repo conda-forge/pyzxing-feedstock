@@ -40,7 +40,7 @@ about:
   home: https://github.com/ChenjieXu/pyzxing
   summary: Python wrapper for ZXing Java library
   license: MIT
-  license_file: LICENSE.txt
+  license_file: LICENSE
 
 extra:
   recipe-maintainers:
