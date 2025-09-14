@@ -7,22 +7,24 @@ package:
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pyzxing-{{ version }}.tar.gz
-  sha256: ac9efa22fce567e3f4234cd6392a1aa2e01fef6ec62753e57cf9038a9c64a231
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/pyzxing-{{ version }}.tar.gz
+  sha256: 77087602f3ec5ccc3f20619f5f85246e02ff543b81c42c9b24dbc4a9f7f30e5c
 
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
 
 requirements:
   host:
     - pip
-    - python >=3.8
+    - python >=3.8,<3.13
+    - setuptools
+    - wheel
   run:
     - joblib
     - numpy
-    - python >=3.8
+    - python >=3.8,<3.13
     - setuptools
 
 test:
