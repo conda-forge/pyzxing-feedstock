@@ -1,0 +1,50 @@
+schema_version: 1
+
+context:
+  name: pyzxing
+  version: "1.1.1"
+
+package:
+  name: ${{ name|lower }}
+  version: ${{ version }}
+
+source:
+  url: https://pypi.org/packages/source/${{ name[0] }}/${{ name }}/pyzxing-${{ version }}.tar.gz
+  sha256: 77087602f3ec5ccc3f20619f5f85246e02ff543b81c42c9b24dbc4a9f7f30e5c
+
+build:
+  number: 0
+  noarch: python
+  script: ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+
+requirements:
+  host:
+    - pip
+    - python ${{ python_min }}.*
+    - setuptools
+    - wheel
+  run:
+    - joblib
+    - numpy
+    - python >=${{ python_min }}
+    - setuptools
+
+tests:
+  - python:
+      imports:
+        - pyzxing
+        - src
+      pip_check: true
+      python_version:
+        - ${{ python_min }}.*
+        - "*"
+
+about:
+  summary: Python wrapper for ZXing Java library
+  license: MIT
+  license_file: LICENSE
+  homepage: https://github.com/ChenjieXu/pyzxing
+
+extra:
+  recipe-maintainers:
+    - ChenjieXu
