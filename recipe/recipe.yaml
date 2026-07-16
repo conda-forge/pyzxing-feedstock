@@ -2,20 +2,31 @@ schema_version: 1
 
 context:
   name: pyzxing
-  version: "1.1.1"
+  version: "1.2.0"
+  runner_version: "1.2.0"
+  runner_filename: pyzxing-runner-1.2.0-zxing-3.5.4.jar
+  runner_sha256: d542daf2b3af3405ed5f949542acb287e176a3cdfd119edb504079c3033cd9cb
 
 package:
   name: ${{ name|lower }}
   version: ${{ version }}
 
 source:
-  url: https://pypi.org/packages/source/${{ name[0] }}/${{ name }}/pyzxing-${{ version }}.tar.gz
-  sha256: 77087602f3ec5ccc3f20619f5f85246e02ff543b81c42c9b24dbc4a9f7f30e5c
+  - url: https://pypi.org/packages/source/${{ name[0] }}/${{ name }}/pyzxing-${{ version }}.tar.gz
+    sha256: c008dddb9203540ddfcf173797881bcb153a4950acf32168c3732f43ad330eb5
+    target_directory: source
+  - url: https://github.com/ChenjieXu/pyzxing/releases/download/v${{ runner_version }}/${{ runner_filename }}
+    sha256: ${{ runner_sha256 }}
+    file_name: ${{ runner_filename }}
+    target_directory: runner
 
 build:
   number: 0
   noarch: python
-  script: ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  script:
+    content:
+      - ${{ PYTHON }} -m pip install ./source -vv --no-deps --no-build-isolation
+      - ${{ PYTHON }} source/scripts/install_conda_runner.py --jar runner/${{ runner_filename }} --fixture source/src/resources/qrcode.png --prefix $PREFIX
 
 requirements:
   host:
@@ -27,22 +38,24 @@ requirements:
     - joblib
     - numpy
     - python >=${{ python_min }}
-    - setuptools
+    - openjdk >=17
 
 tests:
   - python:
       imports:
         - pyzxing
-        - src
       pip_check: true
       python_version:
         - ${{ python_min }}.*
         - "*"
+  - script:
+      - java -version
+      - python -c "from pathlib import Path; import os; from pyzxing import BarCodeReader; root = Path(os.environ['CONDA_PREFIX']) / 'share' / 'pyzxing'; results = BarCodeReader().decode(root / 'test-data' / 'qrcode.png'); assert any(result.get('text') or result.get('raw') for result in results), results"
 
 about:
   summary: Python wrapper for ZXing Java library
   license: MIT
-  license_file: LICENSE
+  license_file: source/LICENSE
   homepage: https://github.com/ChenjieXu/pyzxing
 
 extra:
